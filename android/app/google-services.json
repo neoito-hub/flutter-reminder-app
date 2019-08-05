@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "728455680509",
+    "firebase_url": "https://flutter-demo-3b288.firebaseio.com",
+    "project_id": "flutter-demo-3b288",
+    "storage_bucket": "flutter-demo-3b288.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:728455680509:android:c20805adcb8913ba",
+        "android_client_info": {
+          "package_name": "com.example.reminderapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "728455680509-in979aougd5g4g7m5ve3mvnrrhaftfod.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdhjISXQTgVgdX1bxN9AVx-L_hz39YQbc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "728455680509-in979aougd5g4g7m5ve3mvnrrhaftfod.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "728455680509-gsm8knf6t2f7mv8bkd6qburpctkelfg2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.reminderapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

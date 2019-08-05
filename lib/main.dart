@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reminderapp/login.dart';
-
+import 'package:reminderapp/profile.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return  MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: ProfilePage(),
     );
  
 }

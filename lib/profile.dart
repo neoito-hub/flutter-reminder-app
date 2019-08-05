@@ -1,20 +1,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:reminderapp/verification.dart';
+
 
 
 
 String verificationId;
 TextEditingController _phoneNumberController = TextEditingController();
-TextEditingController _phoneCodeController = TextEditingController();
 
-class LoginPage extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
   @override 
-  _LoginPageState createState() => _LoginPageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
         body: Stack(
           children: <Widget>[
             Background(),
-            Login(),
+            Profile(),
           ],
         ));
   }
@@ -39,50 +38,27 @@ class InputWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: 10, bottom: 30),
-      child: Row(
-              children:<Widget>[ 
-        Container(
-        margin: const EdgeInsets.only(right: 5, left: 5),
-          width: 50,
-          child: Material(
-            elevation: 10,
-            color: Colors.white,
-             child: Padding(
-              padding: EdgeInsets.only(left:5,top: 10, bottom: 10),
-              child:  TextField(
-                controller: _phoneCodeController,
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "+91",
-                    hintStyle: TextStyle(color: Color(0xFFE1E1E1), fontSize: 14)),
-              ),
-          ),
-          ),
-        ),
-        Container(
-          // margin: const EdgeInsets.only(left: 20),
-          width: MediaQuery.of(context).size.width - 80,
-          child: Material(
-            elevation: 10,
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(bottomRight),
-                    topRight: Radius.circular(topRight))),
-            child: Padding(
-              padding: EdgeInsets.only(left: 40, right: 20, top: 10, bottom: 10),
-              child: TextField(
-                controller: _phoneNumberController,
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "9895180190",
-                    hintStyle: TextStyle(color: Color(0xFFE1E1E1), fontSize: 14)),
-              ),
+      padding: EdgeInsets.only(right: 40, bottom: 30),
+      child: Container(
+        width: MediaQuery.of(context).size.width - 40,
+        child: Material(
+          elevation: 10,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  bottomRight: Radius.circular(bottomRight),
+                  topRight: Radius.circular(topRight))),
+          child: Padding(
+            padding: EdgeInsets.only(left: 40, right: 20, top: 10, bottom: 10),
+            child: TextField(
+              controller: _phoneNumberController,
+              decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: "Luke Shaw",
+                  hintStyle: TextStyle(color: Color(0xFFE1E1E1), fontSize: 14)),
             ),
           ),
         ),
-      ],
       ),
     );
   }
@@ -174,15 +150,9 @@ const List<Color> signInGradients = [
 ];
 
 
-class Login extends StatefulWidget{
-  LoginPge createState()=> LoginPge();
-}
-
-
-class LoginPge extends State<Login> {
-  String verificationId;
-@override
-  Widget build(BuildContext context) {
+class Profile extends StatelessWidget {
+  @override
+    Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
         Padding(
@@ -198,7 +168,7 @@ class LoginPge extends State<Login> {
                 Padding(
                   padding: EdgeInsets.only(left: 40, bottom: 10),
                   child: Text(
-                    "Phone Number",
+                    "Enter Your Name",
                     style: TextStyle(fontSize: 16, color: Color(0xFF999A9A)),
                   ),
                 ),
@@ -213,12 +183,6 @@ class LoginPge extends State<Login> {
                             Expanded(
                                 child: Padding(
                               padding: EdgeInsets.only(top: 40),
-                              child: Text(
-                                'Enter your phone number to continue...',
-                                textAlign: TextAlign.end,
-                                style: TextStyle(color: Color(0xFFA0A0A0),
-                                fontSize: 12),
-                              ),
                             )),
                             Container(
                               padding: EdgeInsets.all(10),
@@ -235,7 +199,7 @@ class LoginPge extends State<Login> {
                                   size: 40,
                                   color: Colors.white,
                                 ),
-                                onTap: ()=>_sendCodeToPhoneNumber(),
+                                onTap: (){updateProfile();},
                               ),
                             ),
                           ],
@@ -250,54 +214,8 @@ class LoginPge extends State<Login> {
     );
   }
 
-  // loginWithSms(){
-  //   print('object');
-  //   _sendCodeToPhoneNumber();
-  // }
-    Future<void> _sendCodeToPhoneNumber() async {
-    final PhoneVerificationCompleted verificationCompleted = (user) {
-      setState(() {
-          print('Inside _sendCodeToPhoneNumber: signInWithPhoneNumber auto succeeded: $user');
-      });
-    };
-
-    final PhoneVerificationFailed verificationFailed = (AuthException authException) {
-      setState(() {
-        print('Phone number verification failed. Code: ${authException.code}. Message: ${authException.message}');}
-        );
-    };
-
-    final PhoneCodeSent codeSent =
-        (String verificationId, [int forceResendingToken]) async {
-      this.verificationId = verificationId;
-      print("code sent to " + _phoneNumberController.text+verificationId);
-          Navigator.push(
-            context,
-             MaterialPageRoute(
-             builder: (context) => OtpPage(verificationId:verificationId),
-              ),
-           );   
-    };
-
-    final PhoneCodeAutoRetrievalTimeout codeAutoRetrievalTimeout =
-        (String verificationId) {
-      this.verificationId = verificationId;
-      print("time out");
-    };
-
-     await FirebaseAuth.instance.verifyPhoneNumber(
-        phoneNumber: _phoneCodeController.text+_phoneNumberController.text,
-        timeout: const Duration(seconds: 15),
-        verificationCompleted: verificationCompleted,
-        verificationFailed: verificationFailed,
-        codeSent: codeSent,
-        codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return null;
+  updateProfile(){
+    print('object');
   }
   
 }
