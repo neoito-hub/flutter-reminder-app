@@ -1,19 +1,22 @@
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:reminderapp/homepage.dart';
 
 
 
-
-String verificationId;
-TextEditingController _phoneNumberController = TextEditingController();
+TextEditingController _usernameController = TextEditingController();
 
 class ProfilePage extends StatefulWidget {
+  final uid;
+  ProfilePage({Key key,@required this.uid}):super(key:key);
   @override 
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfilePageState createState() => _ProfilePageState(this.uid);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  var uid;
+  _ProfilePageState(this.uid);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +25,7 @@ class _ProfilePageState extends State<ProfilePage> {
         body: Stack(
           children: <Widget>[
             Background(),
-            Profile(),
+            Profile(uid:uid),
           ],
         ));
   }
@@ -51,7 +54,7 @@ class InputWidget extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.only(left: 40, right: 20, top: 10, bottom: 10),
             child: TextField(
-              controller: _phoneNumberController,
+              controller: _usernameController,
               decoration: InputDecoration(
                   border: InputBorder.none,
                   hintText: "Luke Shaw",
@@ -148,9 +151,15 @@ const List<Color> signInGradients = [
   Color(0xFF3761f4),
   Color(0xFF03A0FE),
 ];
+class Profile extends StatefulWidget{
+  final uid;
+  Profile({Key key, @required this.uid}):super(key:key);
+  ProfilePge createState()=> ProfilePge(uid);
+}
 
-
-class Profile extends StatelessWidget {
+class ProfilePge extends State<Profile> {
+  var uid;
+  ProfilePge(this.uid);
   @override
     Widget build(BuildContext context) {
     return Column(
@@ -214,8 +223,23 @@ class Profile extends StatelessWidget {
     );
   }
 
-  updateProfile(){
-    print('object');
+  updateProfile() async{
+    var newValues = {
+      'user_name': _usernameController.text
+    };
+    Firestore.instance.collection('Users').getDocuments().then((results){
+      results.documents.forEach((element){
+        if(element.data['uid']==uid){
+          Firestore.instance.collection('Users').document(element.documentID).updateData(newValues).catchError((error){print(error);});
+          Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+        );
+        }
+      });
+    });
   }
   
 }

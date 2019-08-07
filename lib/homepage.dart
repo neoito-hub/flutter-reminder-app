@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                      Navigator.push(
                       context,
                       MaterialPageRoute(
-                      // builder: (context) => ReminderPage(user:users[index],email:this.userProfile.email),
+                      builder: (context) => ReminderPage(user:users[index]),
                       ),
                     );   
                  },
@@ -127,10 +127,10 @@ class _HomePageState extends State<HomePage> {
         results.documents.forEach((element){
           print(element.data);
           var dataUser = {
+            'user_id':element.data['uid'],
             'id':element.documentID,
-            'email':element.data['email'],
-            'name':element.data['name'],
-            'phone':element.data['phone'],
+            'name':element.data['user_name'],
+            'phone':element.data['phone_number'],
           };
           users.add(dataUser);
           usersFinal.add(dataUser);
@@ -146,7 +146,7 @@ class _HomePageState extends State<HomePage> {
   _logOut() async{
    SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove('regToken');
-    prefs.remove('userEmail');
+    prefs.remove('user_id');
      _auth.signOut().then((_){
         Navigator.push(
           context,

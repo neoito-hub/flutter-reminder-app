@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 Firestore db = Firestore.instance;
 final databaseReference = FirebaseDatabase.instance.reference();
 
 
 class ReminderPage extends StatefulWidget {
-  final email;
   final  user;
-  ReminderPage({Key key, @required this.user,@required this.email}) : super(key: key);
+  ReminderPage({Key key, @required this.user}) : super(key: key);
   @override
-  _ReminderPageState createState()=>_ReminderPageState(this.user,this.email);
+  _ReminderPageState createState()=>_ReminderPageState(this.user);
 }
 
 class _ReminderPageState extends State<ReminderPage>{
@@ -26,8 +27,7 @@ class _ReminderPageState extends State<ReminderPage>{
    final descriptionController = TextEditingController();
    final datetimeController =TextEditingController();
   var user;
-  String email;
-  _ReminderPageState(this.user,this.email);
+  _ReminderPageState(this.user);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,14 +106,14 @@ class _ReminderPageState extends State<ReminderPage>{
     if((titleController.value!=null)&&(titleController.value!=null)&&(selectedTime!=null)){
 
     var data={
-      'from_email':email,
+      'from_uid':fromUser['from_uid'],
       'from_id':fromUser['from_id'],
       'from_name':fromUser['from_name'],
       'from_phone':fromUser['from_phone'],
+      'to_uid':user['user_id'],
       'to_Id':user['id'],
       'to_num':user['phone'],
       'to_name':user['name'],
-      'to_email':user['email'],
       'title':titleController.text,
       'description':descriptionController.text,
       'time':selectedTime,
@@ -142,14 +142,15 @@ class _ReminderPageState extends State<ReminderPage>{
     }
   }
   getData() async{
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+       var uid = prefs.getString('user_id');
      var fromData =  await Firestore.instance.collection('Users').getDocuments();
         fromData.documents.forEach((element){
-          if(email==element['email']){
-      fromUser = {
+          if(uid==element['uid']){
+      fromUser = { 'from_uid':uid,
                   'from_id':element.documentID,
-                  'from_name':element['name'],
-                  'from_email':element['email'],
-                  'from_phone':element['phone']
+                  'from_name':element['user_name'],
+                  'from_phone':element['phone_number']
                 };
           }
         });

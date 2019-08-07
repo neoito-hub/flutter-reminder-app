@@ -9,7 +9,7 @@ class SentReminder extends StatefulWidget {
 }
 class  _SentReminderPageState extends State<SentReminder> {
   bool reminderAvail = false;
-  var userEmail;
+  var userId;
   List <Map<dynamic,dynamic>> sentReminders =[]; 
   void initState() {
      super.initState();
@@ -169,20 +169,20 @@ Positioned(top: 2, child: Container(
   void getData() async{
         sentReminders= [];
         SharedPreferences prefs = await SharedPreferences.getInstance();
-       userEmail = prefs.getString('userEmail');
-       if(userEmail != null){
+       userId = prefs.getString('user_id');
+       if(userId != null){
         var notifications =  await Firestore.instance.collection('Reminders').getDocuments();
      setState(() {
         notifications.documents.forEach((element){
-          if(element.data['from_email']==userEmail){
+          if(element.data['from_uid']==userId){
             var reminder = {
               'id':element.documentID,
-              'from_email':element.data['from_email'],
+              'from_uid':element.data['from_uid'],
               'from_id':element.data['from_id'],
               'from_name':element.data['from_name'],
               'from_phone':element.data['from_phone'],
               'to_Id':element.data['to_Id'],
-              'to_email':element.data['to_email'],
+              'to_uid':element.data['to_uid'],
               'to_name':element.data['to_name'],
               'to_num':element.data['to_num'],
               'time':element.data['time'],

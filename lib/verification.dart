@@ -5,7 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reminderapp/profile.dart';
-
+import 'package:reminderapp/homepage.dart';
 FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
 class OtpPage extends StatefulWidget {
@@ -17,6 +17,7 @@ class OtpPage extends StatefulWidget {
 }
 
 class OtpPageState extends State<OtpPage> {
+  String documentId;
   String token;
   String verificationId;
   OtpPageState(this.verificationId);
@@ -274,6 +275,8 @@ class OtpPageState extends State<OtpPage> {
         ));
   }
 Future<String> _signInWithPhoneNumber(String smsCode) async {
+  bool flag = false;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     final AuthCredential credential = PhoneAuthProvider.getCredential(
       verificationId: verificationId,
       smsCode: smsCode,
@@ -282,26 +285,68 @@ Future<String> _signInWithPhoneNumber(String smsCode) async {
           final FirebaseUser currentUser = await FirebaseAuth.instance.currentUser();
           assert(user.uid == currentUser.uid);
           if (user!=null){
+            if(prefs.getString('regToken')==null){
             _firebaseMessaging.getToken().then((token){
-             print(token);
-             this.token = token;
-          });
-          var data = {
-            'phone_number':user.phoneNumber,
-            'uid':user.uid
-          };
-          Firestore.instance.collection('Users').add(data).catchError((onError){print(onError);}).then((response){ switchToNextRoute(user.uid);});
+                 print(token);
+                 this.token = token;
+                 prefs.setString('regToken', token);
 
+             });
+            }else{
+              this.token = prefs.getString('regToken');
+            }
+              prefs.setString('user_id', user.uid);
+             Firestore.instance.collection('Users').getDocuments().then((results){
+               if(results.documents.length<=0){
+              var data = {
+                        'phone_number':user.phoneNumber,
+                        'uid':user.uid,
+                        'token':this.token
+                      };
+              Firestore.instance.collection('Users').add(data).catchError((onError){print(onError);}).then((response){ switchToNextRoute(user.uid);});
+               }else{
+                 results.documents.forEach((element){
+                   if(element.data['phone_number']==user.phoneNumber){
+                     flag = true;
+                     documentId = element.documentID;
+                   }
+                 });
+                 if(flag == false){
+                   var data = {
+                        'phone_number':user.phoneNumber,
+                        'uid':user.uid,
+                        'token':this.token
+                      };
+                  Firestore.instance.collection('Users').add(data).catchError((onError){print(onError);}).then((response){ switchToNextRoute(user.uid);});
+                 }else{
+                   var newValues={
+                     'token':this.token
+                   };
+                 Firestore.instance.collection('Users').document(documentId).updateData(newValues).catchError((error){print(error);});
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomePage(),
+                      ),
+                    );         
+                  }
+               }
+             });
+         
           }
         }).catchError((error){print(error);});
 }
   switchToNextRoute(id) async{
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('regToken', token);
+    controller1.text='';
+    controller2.text='';
+    controller3.text='';
+    controller4.text='';
+    controller5.text='';
+    controller6.text='';
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProfilePage(),
+            builder: (context) => ProfilePage(uid:id),
           ),
         );
   }  

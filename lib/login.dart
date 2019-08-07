@@ -271,6 +271,8 @@ class LoginPge extends State<Login> {
         (String verificationId, [int forceResendingToken]) async {
       this.verificationId = verificationId;
       print("code sent to " + _phoneNumberController.text+verificationId);
+        _phoneNumberController.text = '';
+        _phoneCodeController.text = '';
           Navigator.push(
             context,
              MaterialPageRoute(
@@ -287,7 +289,7 @@ class LoginPge extends State<Login> {
 
      await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: _phoneCodeController.text+_phoneNumberController.text,
-        timeout: const Duration(seconds: 15),
+        timeout: const Duration(seconds: 30),
         verificationCompleted: verificationCompleted,
         verificationFailed: verificationFailed,
         codeSent: codeSent,

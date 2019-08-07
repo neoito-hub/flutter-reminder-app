@@ -7,7 +7,7 @@ class RecivedReminder extends StatefulWidget {
   _RecivedReminderPageState createState() => _RecivedReminderPageState();
 }
 class  _RecivedReminderPageState extends State<RecivedReminder> {
-  var userEmail;
+  var userId;
   List <Map<dynamic,dynamic>> recivedReminders =[]; 
   void initState() {
      super.initState();
@@ -97,7 +97,7 @@ Positioned(top: 2, child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
               child:
                           Text('${recivedReminders[index]['hour']}'+':'+'${recivedReminders[index]['minutes']}',
-                style:TextStyle(color: Colors.white,fontSize: 25,fontFamily: 'Open Sans')
+                style:TextStyle(color: Colors.white,fontSize: 20,fontFamily: 'Open Sans')
       ),
             ),
       Text('${recivedReminders[index]['date']}',
@@ -121,11 +121,11 @@ Positioned(top: 2, child: Container(
   }
   getData() async{
         SharedPreferences prefs = await SharedPreferences.getInstance();
-       userEmail = prefs.getString('userEmail');
+       userId = prefs.getString('user_id');
       var notifications =  await Firestore.instance.collection('Reminders').getDocuments();
        setState(() {
         notifications.documents.forEach((element){
-          if((element.data['to_email']==userEmail)&& (element.data['status']=='sent')){
+          if((element.data['to_uid']==userId)&& (element.data['status']=='sent')){
           DateTime date = element.data['time'].toDate();
           element.data['hour'] = date.hour;
           element.data['minutes'] = date.minute;
